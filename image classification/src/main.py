@@ -85,6 +85,10 @@ if __name__ == "__main__":
                        if args.optim_method not in ['Adam', 'SGD'] else '')
                     + (('Milestones_%s_' % ('_'.join(args.milestones)))
                        if args.optim_method == 'SGD_Stage_Decay' else '')
+                    + (('Warmup_Steps_%s_' % args.warmup_steps)
+                       if '+w' in args.optim_method.lower() else '')
+                    + (('Tail_Steps_%s_' % args.tail_steps)
+                       if 'tail' in args.optim_method.lower() else '')
                     + (('c_%g_' % (args.c))
                        if args.optim_method.startswith('SLS') else '')
                     + (('Patience_%d_Thres_%g_' % (args.patience, args.threshold))
@@ -111,8 +115,9 @@ if __name__ == "__main__":
         if args.plot_lr == 'true':
             # plots learning rate value vs time
             os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-            opt_params = f'Scheme={args.optim_method}_eta0={args.eta0}_alpha={args.alpha}_milestones={args.milestones}' \
-                         f'T_max={args.train_epochs * len(train_loader)}_warmup_steps={args.warmup_steps}'
+            opt_params = f'{args.dataset}_Scheme={args.optim_method}_eta0={args.eta0}_alpha={args.alpha}_milestones={args.milestones}' \
+                         f'T_max={args.train_epochs * len(train_loader)}_warmup_steps={args.warmup_steps}' \
+                         f'_tail_steps={args.tail_steps}'
             plt.plot(numpy.arange(0, len(all_learning_rates)), all_learning_rates)
             folder_path = '/'.join([args.log_folder, "learning_rate_plots"])
             if not os.path.exists(folder_path):

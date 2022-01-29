@@ -6,8 +6,9 @@ import torch.optim as optim
 from sgd_lr_decay import SGDLRDecay
 from sls import Sls
 
-def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max, 
-               n_batches_per_epoch, nesterov, momentum, weight_decay, warmp_steps):
+
+def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
+               n_batches_per_epoch, nesterov, momentum, weight_decay, warmp_steps, tail_steps):
     """
     Args:
         params: iterable of parameters to optimize or dicts defining
@@ -51,10 +52,13 @@ def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
             scheme = 'linear+w'
         elif optim_method == 'SGD_Cosine+w_Decay':
             scheme = 'cosine+w'
+        elif optim_method == 'SGD_Linear_Start_Cosine_Tail_Decay':
+            scheme = 'linear_start_cosine_tail'
         optimizer = SGDLRDecay(params=params, scheme=scheme, eta0=eta0,
                                alpha=alpha, milestones=milestones, T_max=T_max,
                                momentum=momentum, weight_decay=weight_decay,
-                               nesterov=nesterov,warmup_steps=warmp_steps)
+                               nesterov=nesterov, warmup_steps=warmp_steps,
+                               tail_steps=tail_steps)
     elif optim_method == 'SLS-Armijo0':
         optimizer = Sls(params=params, n_batches_per_epoch=n_batches_per_epoch,
                         init_step_size=eta0, c=c, reset_option=0,

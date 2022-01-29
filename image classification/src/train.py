@@ -31,7 +31,9 @@ def train(args, train_loader, test_loader, net, criterion, device):
                            n_batches_per_epoch=len(train_loader),
                            nesterov=args.nesterov,
                            momentum=args.momentum,
-                           weight_decay=args.weight_decay,warmp_steps=args.warmup_steps)
+                           weight_decay=args.weight_decay,
+                           warmp_steps=args.warmup_steps*len(train_loader),
+                           tail_steps=args.tail_steps*len(train_loader))
 
     if args.optim_method == 'SGD_ReduceLROnPlateau':
         scheduler = ReduceLROnPlateau(optimizer,

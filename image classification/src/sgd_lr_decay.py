@@ -30,7 +30,7 @@ class SGDLRDecay(Optimizer):
     """
 
     def __init__(self, params, scheme, eta0, alpha, milestones=[], T_max=0,
-                 momentum=0, dampening=0, weight_decay=0, nesterov=False, warmup_steps= 0 ):
+                 momentum=0, dampening=0, weight_decay=0, nesterov=False, warmup_steps= 0, tail_steps=0 ):
         if eta0 < 0.0:
             raise ValueError("Invalid eta0 value: {}".format(eta0))
         if alpha < 0.0:
@@ -53,6 +53,7 @@ class SGDLRDecay(Optimizer):
         self.cur_lr = eta0
         self.T_max = T_max
         self.warmup_steps = warmup_steps
+        self.tail_steps = tail_steps
 
         # Define the function for computing the current step size for each decay.
         self.get_lr_func = None
@@ -78,7 +79,7 @@ class SGDLRDecay(Optimizer):
                 if t > self.warmup_steps else eta0 * (t / self.warmup_steps)
         elif scheme == 'linear_start_cosine_tail':
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t * math.pi / T_max)) * eta0 \
-                if t < self.warmup_steps else eta0 * ((1 - float(t) / T_max))
+                if t > T_max - self.tail_steps else eta0 * ((1 - float(t) / T_max))
 
 
 
