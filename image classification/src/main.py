@@ -26,7 +26,7 @@ if __name__ == "__main__":
         use_cuda = args.use_cuda and torch.cuda.is_available()
         device = torch.device("cuda:0" if use_cuda else "cpu")
 
-        # Set the ramdom seed for reproducibility.
+        # Set the random seed for reproducibility.
         if args.reproducible:
             torch.manual_seed(args.seed)
             np.random.seed(args.seed)
@@ -95,6 +95,7 @@ if __name__ == "__main__":
                        if args.optim_method == 'SGD_ReduceLROnPlateau' else '')
                     + ('Epoch_%d_Batch_%d_' % (args.train_epochs, args.batchsize))
                     + ('%s' % ('Validation' if args.validation else 'Test'))
+                    + ('Seed_%s_' % (args.seed if args.reproducible else ''))
                     + '.txt')
         mode = 'w' if args.validation else 'a'
         with open(args.log_folder + '/' + log_name, mode) as f:
