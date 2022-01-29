@@ -7,7 +7,7 @@ from sgd_lr_decay import SGDLRDecay
 from sls import Sls
 
 def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max, 
-               n_batches_per_epoch, nesterov, momentum, weight_decay):
+               n_batches_per_epoch, nesterov, momentum, weight_decay, warmp_steps):
     """
     Args:
         params: iterable of parameters to optimize or dicts defining
@@ -45,10 +45,16 @@ def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
             scheme = 'stage'
         elif optim_method == 'SGD_Cosine_Decay':
             scheme = 'cosine'
+        elif optim_method == 'SGD_Linear_Decay':
+            scheme = 'linear'
+        elif optim_method == 'SGD_Linear+w_Decay':
+            scheme = 'linear+w'
+        elif optim_method == 'SGD_Cosine+w_Decay':
+            scheme = 'cosine+w'
         optimizer = SGDLRDecay(params=params, scheme=scheme, eta0=eta0,
                                alpha=alpha, milestones=milestones, T_max=T_max,
                                momentum=momentum, weight_decay=weight_decay,
-                               nesterov=nesterov)
+                               nesterov=nesterov,warmup_steps=warmp_steps)
     elif optim_method == 'SLS-Armijo0':
         optimizer = Sls(params=params, n_batches_per_epoch=n_batches_per_epoch,
                         init_step_size=eta0, c=c, reset_option=0,

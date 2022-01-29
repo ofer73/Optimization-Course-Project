@@ -44,8 +44,8 @@ def load_args():
                         help='Which dataset to run on (default: CIFAR10).')  
     parser.add_argument('--dataroot', type=str, default='../data',
                         help='Where to retrieve data (default: ../data).')        
-    parser.add_argument('--use-cuda', action='store_true',
-                        help='Use CUDA (default: False).')
+    parser.add_argument('--use-cuda', default=True, action='store_true',
+                        help='Use CUDA (default: True).')
     parser.add_argument('--reproducible', action='store_true',
                         help='Ensure reproducibility (default: False).')
     parser.add_argument('--seed', type=int, default=0, metavar='S',
@@ -53,5 +53,9 @@ def load_args():
 
     parser.add_argument('--log-folder', type=str, default='../logs',
                         help='Where to store results.')
+    parser.add_argument('--plot_lr', type=str, default='false',
+                        help='set true to plot learning rates')
+    parser.add_argument('--warmup_steps', type=int, default=0,
+                        help='number of linear warmup steps for +w optimizers')
 
     return parser.parse_args()

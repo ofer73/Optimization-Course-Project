@@ -1,3 +1,8 @@
+import sys
+
+import matplotlib.pyplot as plt
+import numpy
+
 if __name__ == "__main__":
     import torch
     import torch.nn as nn
@@ -14,9 +19,9 @@ if __name__ == "__main__":
     from train import train
     from evaluate import evaluate
 
+
     def main():
         args = load_args()
-
         # Check the availability of GPU.
         use_cuda = args.use_cuda and torch.cuda.is_available()
         device = torch.device("cuda:0" if use_cuda else "cpu")
@@ -50,7 +55,7 @@ if __name__ == "__main__":
         elif args.dataset in ['MNIST', 'FashionMNIST']:
             net = MNISTConvNet()
         else:
-            raise ValueError("Unsupported dataset {0}.".format(args.dataset))    
+            raise ValueError("Unsupported dataset {0}.".format(args.dataset))
         net.to(device)
         criterion = nn.CrossEntropyLoss()
 
@@ -59,7 +64,7 @@ if __name__ == "__main__":
         running_stats = train(args, train_loader, test_loader, net,
                               criterion, device)
         all_train_losses, all_train_accuracies = running_stats[:2]
-        all_test_losses, all_test_accuracies = running_stats[2:]
+        all_test_losses, all_test_accuracies, all_learning_rates = running_stats[2:]
 
         print("Evaluating...")
         final_train_loss, final_train_accuracy = evaluate(train_loader, net,
@@ -72,21 +77,21 @@ if __name__ == "__main__":
         if not os.path.exists(args.log_folder):
             os.makedirs(args.log_folder)
         log_name = (('%s_%s_' % (args.dataset, args.optim_method))
-                     + ('Eta0_%g_' % (args.eta0))
-                     + ('WD_%g_' % (args.weight_decay))
-                     + (('Mom_%g_' % (args.momentum))
-                         if args.optim_method.startswith('SGD') else '')
-                     + (('alpha_%g_' % (args.alpha))
-                         if args.optim_method not in ['Adam', 'SGD'] else '')
-                     + (('Milestones_%s_' % ('_'.join(args.milestones)))
-                         if args.optim_method == 'SGD_Stage_Decay' else '')
-                     + (('c_%g_' % (args.c))
-                         if args.optim_method.startswith('SLS') else '')
-                     + (('Patience_%d_Thres_%g_' % (args.patience, args.threshold))
-                         if args.optim_method == 'SGD_ReduceLROnPlateau' else '')
-                     + ('Epoch_%d_Batch_%d_' % (args.train_epochs, args.batchsize))
-                     + ('%s' % ('Validation' if args.validation else 'Test'))
-                     + '.txt')
+                    + ('Eta0_%g_' % (args.eta0))
+                    + ('WD_%g_' % (args.weight_decay))
+                    + (('Mom_%g_' % (args.momentum))
+                       if args.optim_method.startswith('SGD') else '')
+                    + (('alpha_%g_' % (args.alpha))
+                       if args.optim_method not in ['Adam', 'SGD'] else '')
+                    + (('Milestones_%s_' % ('_'.join(args.milestones)))
+                       if args.optim_method == 'SGD_Stage_Decay' else '')
+                    + (('c_%g_' % (args.c))
+                       if args.optim_method.startswith('SLS') else '')
+                    + (('Patience_%d_Thres_%g_' % (args.patience, args.threshold))
+                       if args.optim_method == 'SGD_ReduceLROnPlateau' else '')
+                    + ('Epoch_%d_Batch_%d_' % (args.train_epochs, args.batchsize))
+                    + ('%s' % ('Validation' if args.validation else 'Test'))
+                    + '.txt')
         mode = 'w' if args.validation else 'a'
         with open(args.log_folder + '/' + log_name, mode) as f:
             f.write('Training running losses:\n')
@@ -99,10 +104,22 @@ if __name__ == "__main__":
             f.write('Test running losses:\n')
             f.write('{0}\n'.format(all_test_losses))
             f.write('Test running accuracies:\n')
-            f.write('{0}\n'.format(all_test_accuracies))               
+            f.write('{0}\n'.format(all_test_accuracies))
             f.write('Final test loss is %g\n' % final_test_loss)
-            f.write('Final test accuracy is %g\n' % final_test_accuracy) 
+            f.write('Final test accuracy is %g\n' % final_test_accuracy)
+
+        if args.plot_lr == 'true':
+            # plots learning rate value vs time
+            os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+            opt_params = f'Scheme={args.optim_method}_eta0={args.eta0}_alpha={args.alpha}_milestones={args.milestones}' \
+                         f'T_max={args.train_epochs * len(train_loader)}_warmup_steps={args.warmup_steps}'
+            plt.plot(numpy.arange(0, len(all_learning_rates)), all_learning_rates)
+            folder_path = '/'.join([args.log_folder, "learning_rate_plots"])
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+            plt.savefig('/'.join([folder_path, f'{opt_params}.jpg']))
 
         print('Finished.')
+
 
     main()

@@ -31,7 +31,7 @@ def train(args, train_loader, test_loader, net, criterion, device):
                            n_batches_per_epoch=len(train_loader),
                            nesterov=args.nesterov,
                            momentum=args.momentum,
-                           weight_decay=args.weight_decay)
+                           weight_decay=args.weight_decay,warmp_steps=args.warmup_steps)
 
     if args.optim_method == 'SGD_ReduceLROnPlateau':
         scheduler = ReduceLROnPlateau(optimizer,
@@ -47,6 +47,7 @@ def train(args, train_loader, test_loader, net, criterion, device):
     all_train_accuracies = []
     all_test_losses = []
     all_test_accuracies = []
+    all_learning_rates = []
     for epoch in range(1, args.train_epochs + 1):
         net.train()
         for data in train_loader:
@@ -65,6 +66,7 @@ def train(args, train_loader, test_loader, net, criterion, device):
                 if 'Polyak' in args.optim_method:
                     optimizer.step(loss.item())
                 else:
+                    all_learning_rates += [optimizer.cur_lr]
                     optimizer.step()
 
         # Evaluate the model on training and validation dataset.
@@ -89,5 +91,5 @@ def train(args, train_loader, test_loader, net, criterion, device):
                 scheduler.step(test_loss)
 
     return (all_train_losses, all_train_accuracies,
-            all_test_losses, all_test_accuracies)
+            all_test_losses, all_test_accuracies, all_learning_rates)
             
