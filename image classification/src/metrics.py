@@ -1,8 +1,8 @@
 '''
 Obtained from https://github.com/IssamLaradji/sls for the stochastic line search functionality.
 '''
-
-import torch 
+import numpy as np
+import torch
 import tqdm
 from torch.utils.data import DataLoader
 
@@ -29,10 +29,11 @@ def get_metric_function(metric_name):
     elif metric_name == "squared_loss":
         return squared_loss
 
+
 @torch.no_grad()
 def compute_metric_on_dataset(model, dataset, metric_name):
     metric_function = get_metric_function(metric_name)
-    
+
     model.eval()
 
     loader = DataLoader(dataset, drop_last=False, batch_size=1024)
@@ -42,11 +43,12 @@ def compute_metric_on_dataset(model, dataset, metric_name):
     for images, labels in tqdm.tqdm(loader):
         images, labels = images.cuda(), labels.cuda()
 
-        score_sum += metric_function(model, images, labels).item() * images.shape[0] 
-            
+        score_sum += metric_function(model, images, labels).item() * images.shape[0]
+
     score = float(score_sum / len(loader.dataset))
 
     return score
+
 
 def softmax_loss(model, images, labels, backwards=False):
     logits = model(images)
@@ -58,6 +60,7 @@ def softmax_loss(model, images, labels, backwards=False):
 
     return loss
 
+
 def logistic_loss(model, images, labels, backwards=False):
     logits = model(images)
     criterion = torch.nn.BCEWithLogitsLoss(reduction="mean")
@@ -67,6 +70,7 @@ def logistic_loss(model, images, labels, backwards=False):
         loss.backward()
 
     return loss
+
 
 def squared_loss(model, images, labels, backwards=False):
     logits = model(images)
@@ -78,25 +82,28 @@ def squared_loss(model, images, labels, backwards=False):
 
     return loss
 
+
 def mse_score(model, images, labels):
     logits = model(images).view(-1)
-    mse = ((logits - labels.view(-1))**2).float().mean()
+    mse = ((logits - labels.view(-1)) ** 2).float().mean()
 
     return mse
 
+
 def squared_hinge_loss(model, images, labels, backwards=False):
-    margin=1.
+    margin = 1.
     logits = model(images).view(-1)
 
-    y = 2*labels - 1
+    y = 2 * labels - 1
 
-    loss = torch.mean((torch.max( torch.zeros_like(y) , 
-                torch.ones_like(y) - torch.mul(y, logits)))**2 )
+    loss = torch.mean((torch.max(torch.zeros_like(y),
+                                 torch.ones_like(y) - torch.mul(y, logits))) ** 2)
 
     if backwards and loss.requires_grad:
         loss.backward()
 
     return loss
+
 
 def logistic_accuracy(model, images, labels):
     logits = torch.sigmoid(model(images)).view(-1)
@@ -105,9 +112,27 @@ def logistic_accuracy(model, images, labels):
 
     return acc
 
+
 def softmax_accuracy(model, images, labels):
     logits = model(images)
     pred_labels = logits.argmax(dim=1)
     acc = (pred_labels == labels).float().mean()
 
     return acc
+
+
+def get_optimization_rate(all_train_losses, convergence_threshold):
+    """
+    Args:
+        all_train_losses: list of all train losses per epoch
+        convergence_threshold: precentage of total optimization process were we consider the model to have converged
+    Returns:
+        earliest epoch where args.convergence_rate_threshold percent (e.g. 90%) of optimization was accomplished
+    """
+    min_loss = min(all_train_losses)
+    max_loss = all_train_losses[0]
+    convergence_threshold = max_loss - (max_loss - min_loss) * convergence_threshold
+    for epoch, loss in enumerate(all_train_losses):
+        if loss < convergence_threshold:
+            return float(epoch)
+    return -1.0

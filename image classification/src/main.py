@@ -18,6 +18,7 @@ if __name__ == "__main__":
     from cifar100_densenet import densenet
     from train import train
     from evaluate import evaluate
+    from metrics import get_optimization_rate
 
 
     def main():
@@ -96,6 +97,7 @@ if __name__ == "__main__":
                     + ('Epoch_%d_Batch_%d_' % (args.train_epochs, args.batchsize))
                     + ('%s' % ('Validation' if args.validation else 'Test'))
                     + ('Seed_%s_' % (args.seed if args.reproducible else ''))
+                    + ('convergence_rate_threshold_%g_' % args.convergence_rate_threshold)
                     + '.txt')
         mode = 'w' if args.validation else 'a'
         with open(args.log_folder + '/' + log_name, mode) as f:
@@ -105,7 +107,9 @@ if __name__ == "__main__":
             f.write('{0}\n'.format(all_train_accuracies))
             f.write('Final training loss is %g\n' % final_train_loss)
             f.write('Final training accuracy is %g\n' % final_train_accuracy)
-
+            f.write('Final training accuracy is %g\n' % final_train_accuracy)
+            f.write('Optimization Rate is %g\n'
+                    % get_optimization_rate(all_train_accuracies, args.convergence_rate_threshold))
             f.write('Test running losses:\n')
             f.write('{0}\n'.format(all_test_losses))
             f.write('Test running accuracies:\n')
