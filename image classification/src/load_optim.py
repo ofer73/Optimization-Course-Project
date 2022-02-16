@@ -54,6 +54,11 @@ def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
             scheme = 'cosine+w'
         elif optim_method == 'SGD_Linear_Start_Cosine_Tail_Decay':
             scheme = 'linear_start_cosine_tail'
+        elif optim_method == 'SGD_Cosine_Start_Linear_Tail_Decay':
+            scheme = 'cosine+linear_tail'
+        elif optim_method == 'SGD_Exp_Start_Cosine_Tail_Decay':
+            scheme = 'exp+cosine_tail'
+            
         optimizer = SGDLRDecay(params=params, scheme=scheme, eta0=eta0,
                                alpha=alpha, milestones=milestones, T_max=T_max,
                                momentum=momentum, weight_decay=weight_decay,

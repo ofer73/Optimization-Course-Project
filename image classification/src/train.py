@@ -68,8 +68,10 @@ def train(args, train_loader, test_loader, net, criterion, device):
                 if 'Polyak' in args.optim_method:
                     optimizer.step(loss.item())
                 else:
-                    all_learning_rates += [optimizer.cur_lr]
                     optimizer.step()
+                    
+            if args.optim_method.startswith("SGD") and args.optim_method.endswith("Decay"):
+                all_learning_rates += [optimizer.cur_lr]
 
         # Evaluate the model on training and validation dataset.
         if args.optim_method == 'SGD_ReduceLROnPlateau' or (epoch % args.eval_interval == 0):
