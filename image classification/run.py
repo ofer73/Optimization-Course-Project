@@ -5,7 +5,7 @@ from itertools import product
 slurm = 'main.slurm'
 cmd = '/home/ycarmon/users/maorkehati/anaconda3/envs/optp/bin/python ./src/main.py'
 
-args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-decay", "train-epochs", "batchsize", "eval-interval", "use-cuda", "log-folder", "dataset", "dataroot"]
+args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-decay", "train-epochs", "batchsize", "eval-interval", "use-cuda", "dataset", "dataroot", "plot-lr"]
 
 optim_method = ["SGD_Cosine_Start_Linear_Tail_Decay"]
 eta0 = [10**i for i in range(-5,1)]
@@ -17,9 +17,9 @@ train_epochs = [50]
 batchsize = [128]
 eval_interval = [1]
 use_cuda = [""]
-log_folder = [".logs/FashionMNIST"]
 dataset = ["FashionMNIST"]
 dataroot = ["./data"]
+plot_lr = [""]
 
 args_list = list(product(*[globals()[i.replace("-","_")] for i in args_names]))
 
@@ -32,14 +32,14 @@ def main():
     os.makedirs(out_folder_root)
     for args_values in args_list:
         print("args_values", args_values)
-        folder_name = "_".join([f"{arg_name}-{arg_value if type(arg_value) != str else arg_value.replace('/','')}" for arg_name, arg_value in zip(args_names, args_values)])
+        folder_name = "_".join([f"{arg_name}-{arg_value if type(arg_value) != str else arg_value.replace('/','')}" for arg_name, arg_value in zip(args_names, args_values) if arg_value != None])
         out_folder = f"{out_folder_root}/{folder_name}"
         os.makedirs(out_folder)
         with open(slurm,'r') as mainf:
             c = mainf.read()
             
         cind = c.find(cmd)
-        c = c[:cind]+ cmd + " " + " ".join([f"--{arg_name} {arg_value}" for arg_name, arg_value in zip(args_names, args_values) if arg_value != None]) + c[c.find("\n",cind):]
+        c = c[:cind]+ cmd + f" --log-folder {out_folder} " + " ".join([f"--{arg_name} {arg_value}" for arg_name, arg_value in zip(args_names, args_values) if arg_value != None]) + c[c.find("\n",cind):]
         cind = c.find('--output')
         c = c[:cind]+ f'--output={out_folder}/out.out' + c[c.find("\n",cind):]
         cind = c.find('--error')

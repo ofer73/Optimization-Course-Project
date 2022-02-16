@@ -53,11 +53,11 @@ def load_args():
 
     parser.add_argument('--log-folder', type=str, default='../logs',
                         help='Where to store results.')
-    parser.add_argument('--plot_lr', type=str, default='false',
+    parser.add_argument('--plot-lr', action='store_true',
                         help='set true to plot learning rates')
-    parser.add_argument('--warmup_steps', type=float, default=0.0,
+    parser.add_argument('--warmup-steps', type=float, default=0.0,
                         help='number of linear warmup steps for +w lr schedulers (in epochs)')
-    parser.add_argument('--tail_steps', type=float, default=0.0,
+    parser.add_argument('--tail-steps', type=float, default=0.0,
                         help='number of epochs which use the 2nd "tail" lr scheduler (in epochs)')
 
     return parser.parse_args()

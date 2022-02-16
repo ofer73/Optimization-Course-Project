@@ -73,8 +73,9 @@ if __name__ == "__main__":
                                                         criterion, device)
 
         # Logging results.
-        print('Writing the results.')
-        if not os.path.exists(args.log_folder):
+        print(f'Writing the results to folder {args.log_folder}')
+        log_name = 'log.log'
+        '''if not os.path.exists(args.log_folder):
             os.makedirs(args.log_folder)
         log_name = (('%s_%s_' % (args.dataset, args.optim_method))
                     + ('Eta0_%g_' % (args.eta0))
@@ -96,7 +97,7 @@ if __name__ == "__main__":
                     + ('Epoch_%d_Batch_%d_' % (args.train_epochs, args.batchsize))
                     + ('%s' % ('Validation' if args.validation else 'Test'))
                     + ('Seed_%s_' % (args.seed if args.reproducible else ''))
-                    + '.txt')
+                    + '.txt')'''
         mode = 'w' if args.validation else 'a'
         with open(args.log_folder + '/' + log_name, mode) as f:
             f.write('Training running losses:\n')
@@ -113,17 +114,20 @@ if __name__ == "__main__":
             f.write('Final test loss is %g\n' % final_test_loss)
             f.write('Final test accuracy is %g\n' % final_test_accuracy)
 
-        if args.plot_lr == 'true':
+        if args.plot_lr:
             # plots learning rate value vs time
             os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-            opt_params = f'{args.dataset}_Scheme={args.optim_method}_eta0={args.eta0}_alpha={args.alpha}_milestones={args.milestones}' \
+            '''opt_params = f'{args.dataset}_Scheme={args.optim_method}_eta0={args.eta0}_alpha={args.alpha}_milestones={args.milestones}' \
                          f'T_max={args.train_epochs * len(train_loader)}_warmup_steps={args.warmup_steps}' \
                          f'_tail_steps={args.tail_steps}'
-            plt.plot(numpy.arange(0, len(all_learning_rates)), all_learning_rates)
+            
             folder_path = '/'.join([args.log_folder, "learning_rate_plots"])
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
-            plt.savefig('/'.join([folder_path, f'{opt_params}.jpg']))
+            plt.savefig('/'.join([folder_path, f'{opt_params}.jpg']))'''
+            
+            plt.plot(numpy.arange(0, len(all_learning_rates)), all_learning_rates)
+            plt.savefig(os.path.join(args.log_folder, 'scheduler.jpg'))
 
         print('Finished.')
 
