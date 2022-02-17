@@ -1,0 +1,11 @@
+Loading data...
+Training...
+Epoch 1 ---  train: loss - 0.354959,  accuracy - 0.8714;  test: loss - 0.384993,  accuracy - 0.861
+Epoch 2 ---  train: loss - 0.283891,  accuracy - 0.8969;  test: loss - 0.315803,  accuracy - 0.8832
+Epoch 3 ---  train: loss - 0.255858,  accuracy - 0.905417;  test: loss - 0.291145,  accuracy - 0.895
+Epoch 4 ---  train: loss - 0.223876,  accuracy - 0.918917;  test: loss - 0.266149,  accuracy - 0.9008
+Epoch 5 ---  train: loss - 0.205811,  accuracy - 0.92475;  test: loss - 0.252067,  accuracy - 0.9077
+Epoch 6 ---  train: loss - 0.187899,  accuracy - 0.931583;  test: loss - 0.246113,  accuracy - 0.9082
+Epoch 7 ---  train: loss - 0.174949,  accuracy - 0.937683;  test: loss - 0.23793,  accuracy - 0.9122
+Epoch 8 ---  train: loss - 0.160825,  accuracy - 0.941983;  test: loss - 0.232757,  accuracy - 0.9153
+Epoch 9 ---  train: loss - 0.155569,  accuracy - 0.94565;  test: loss - 0.229219,  accuracy - 0.9175

@@ -1,0 +1,7 @@
+Loading data...
+Training...
+Epoch 1 ---  train: loss - 0.358794,  accuracy - 0.869583;  test: loss - 0.383966,  accuracy - 0.855
+Epoch 2 ---  train: loss - 0.292769,  accuracy - 0.894117;  test: loss - 0.323445,  accuracy - 0.8844
+Epoch 3 ---  train: loss - 0.253092,  accuracy - 0.909117;  test: loss - 0.290931,  accuracy - 0.8959
+Epoch 4 ---  train: loss - 0.250892,  accuracy - 0.907617;  test: loss - 0.289062,  accuracy - 0.8937
+Epoch 5 ---  train: loss - 0.213258,  accuracy - 0.922133;  test: loss - 0.267023,  accuracy - 0.9

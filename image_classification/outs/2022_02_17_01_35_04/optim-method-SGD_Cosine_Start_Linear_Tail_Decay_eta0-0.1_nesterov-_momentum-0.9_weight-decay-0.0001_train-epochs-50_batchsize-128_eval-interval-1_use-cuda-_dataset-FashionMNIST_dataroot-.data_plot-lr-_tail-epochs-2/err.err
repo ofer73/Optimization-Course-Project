@@ -1,0 +1,5 @@
+/home/ycarmon/users/maorkehati/Optimization-Course-Project/image_classification/src/sgd_lr_decay.py:121: UserWarning: This overload of add_ is deprecated:
+	add_(Number alpha, Tensor other)
+Consider using one of the following signatures instead:
+	add_(Tensor other, *, Number alpha) (Triggered internally at  ../torch/csrc/utils/python_arg_parser.cpp:1050.)
+  d_p.add_(weight_decay, p.data)

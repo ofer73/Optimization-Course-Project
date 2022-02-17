@@ -1,0 +1,55 @@
+Loading data...
+Training...
+Epoch 1 ---  train: loss - 0.613291,  accuracy - 0.782217;  test: loss - 0.629634,  accuracy - 0.7744
+Epoch 2 ---  train: loss - 0.502208,  accuracy - 0.821283;  test: loss - 0.523021,  accuracy - 0.8107
+Epoch 3 ---  train: loss - 0.448904,  accuracy - 0.838567;  test: loss - 0.471928,  accuracy - 0.8306
+Epoch 4 ---  train: loss - 0.407544,  accuracy - 0.8546;  test: loss - 0.43083,  accuracy - 0.8433
+Epoch 5 ---  train: loss - 0.381135,  accuracy - 0.86355;  test: loss - 0.406997,  accuracy - 0.8501
+Epoch 6 ---  train: loss - 0.362858,  accuracy - 0.871;  test: loss - 0.389134,  accuracy - 0.86
+Epoch 7 ---  train: loss - 0.354587,  accuracy - 0.871533;  test: loss - 0.385501,  accuracy - 0.861
+Epoch 8 ---  train: loss - 0.337302,  accuracy - 0.879683;  test: loss - 0.365264,  accuracy - 0.866
+Epoch 9 ---  train: loss - 0.326336,  accuracy - 0.8822;  test: loss - 0.356611,  accuracy - 0.8709
+Epoch 10 ---  train: loss - 0.318704,  accuracy - 0.886067;  test: loss - 0.349839,  accuracy - 0.8745
+Epoch 11 ---  train: loss - 0.303567,  accuracy - 0.890417;  test: loss - 0.337126,  accuracy - 0.8767
+Epoch 12 ---  train: loss - 0.298225,  accuracy - 0.891567;  test: loss - 0.332015,  accuracy - 0.8781
+Epoch 13 ---  train: loss - 0.289551,  accuracy - 0.895133;  test: loss - 0.322636,  accuracy - 0.8848
+Epoch 14 ---  train: loss - 0.287315,  accuracy - 0.895167;  test: loss - 0.322694,  accuracy - 0.8818
+Epoch 15 ---  train: loss - 0.280341,  accuracy - 0.8993;  test: loss - 0.314544,  accuracy - 0.8859
+Epoch 16 ---  train: loss - 0.275658,  accuracy - 0.900433;  test: loss - 0.312197,  accuracy - 0.8889
+Epoch 17 ---  train: loss - 0.268511,  accuracy - 0.90525;  test: loss - 0.304594,  accuracy - 0.8921
+Epoch 18 ---  train: loss - 0.261376,  accuracy - 0.904967;  test: loss - 0.299069,  accuracy - 0.8923
+Epoch 19 ---  train: loss - 0.261477,  accuracy - 0.905567;  test: loss - 0.300303,  accuracy - 0.893
+Epoch 20 ---  train: loss - 0.253624,  accuracy - 0.907983;  test: loss - 0.29279,  accuracy - 0.8938
+Epoch 21 ---  train: loss - 0.251012,  accuracy - 0.909283;  test: loss - 0.292704,  accuracy - 0.8949
+Epoch 22 ---  train: loss - 0.247239,  accuracy - 0.9114;  test: loss - 0.287619,  accuracy - 0.8948
+Epoch 23 ---  train: loss - 0.241524,  accuracy - 0.913233;  test: loss - 0.283582,  accuracy - 0.8975
+Epoch 24 ---  train: loss - 0.2409,  accuracy - 0.912067;  test: loss - 0.284182,  accuracy - 0.8958
+Epoch 25 ---  train: loss - 0.237203,  accuracy - 0.915083;  test: loss - 0.280302,  accuracy - 0.8991
+Epoch 26 ---  train: loss - 0.234939,  accuracy - 0.914433;  test: loss - 0.278742,  accuracy - 0.8983
+Epoch 27 ---  train: loss - 0.23882,  accuracy - 0.9122;  test: loss - 0.282195,  accuracy - 0.8945
+Epoch 28 ---  train: loss - 0.230959,  accuracy - 0.917017;  test: loss - 0.277173,  accuracy - 0.9006
+Epoch 29 ---  train: loss - 0.227506,  accuracy - 0.918533;  test: loss - 0.273298,  accuracy - 0.9028
+Epoch 30 ---  train: loss - 0.224972,  accuracy - 0.919633;  test: loss - 0.271629,  accuracy - 0.9028
+Epoch 31 ---  train: loss - 0.221088,  accuracy - 0.9202;  test: loss - 0.2677,  accuracy - 0.9041
+Epoch 32 ---  train: loss - 0.22005,  accuracy - 0.922483;  test: loss - 0.267008,  accuracy - 0.9049
+Epoch 33 ---  train: loss - 0.218691,  accuracy - 0.9216;  test: loss - 0.267339,  accuracy - 0.903
+Epoch 34 ---  train: loss - 0.216659,  accuracy - 0.922767;  test: loss - 0.265322,  accuracy - 0.9044
+Epoch 35 ---  train: loss - 0.216262,  accuracy - 0.92205;  test: loss - 0.265367,  accuracy - 0.9035
+Epoch 36 ---  train: loss - 0.214045,  accuracy - 0.923683;  test: loss - 0.263172,  accuracy - 0.9049
+Epoch 37 ---  train: loss - 0.214441,  accuracy - 0.923233;  test: loss - 0.265018,  accuracy - 0.906
+Epoch 38 ---  train: loss - 0.212127,  accuracy - 0.924233;  test: loss - 0.263082,  accuracy - 0.9064
+Epoch 39 ---  train: loss - 0.210862,  accuracy - 0.924683;  test: loss - 0.261654,  accuracy - 0.9061
+Epoch 40 ---  train: loss - 0.210853,  accuracy - 0.92465;  test: loss - 0.262332,  accuracy - 0.9052
+Epoch 41 ---  train: loss - 0.209555,  accuracy - 0.924933;  test: loss - 0.261172,  accuracy - 0.9064
+Epoch 42 ---  train: loss - 0.209191,  accuracy - 0.925183;  test: loss - 0.260812,  accuracy - 0.9065
+Epoch 43 ---  train: loss - 0.208338,  accuracy - 0.925217;  test: loss - 0.26015,  accuracy - 0.9069
+Epoch 44 ---  train: loss - 0.208956,  accuracy - 0.92555;  test: loss - 0.261114,  accuracy - 0.908
+Epoch 45 ---  train: loss - 0.207893,  accuracy - 0.925683;  test: loss - 0.259833,  accuracy - 0.9068
+Epoch 46 ---  train: loss - 0.207683,  accuracy - 0.92585;  test: loss - 0.25973,  accuracy - 0.907
+Epoch 47 ---  train: loss - 0.207608,  accuracy - 0.925683;  test: loss - 0.259768,  accuracy - 0.9076
+Epoch 48 ---  train: loss - 0.207504,  accuracy - 0.925783;  test: loss - 0.259592,  accuracy - 0.9071
+Epoch 49 ---  train: loss - 0.207477,  accuracy - 0.925733;  test: loss - 0.259589,  accuracy - 0.9068
+Epoch 50 ---  train: loss - 0.207472,  accuracy - 0.925817;  test: loss - 0.259575,  accuracy - 0.907
+Evaluating...
+Writing the results to folder outs/2022_02_16_22_00_51/optim-method-SGD_Cosine_Start_Linear_Tail_Decay_eta0-0.001_nesterov-_momentum-0.9_weight-decay-0.0001_train-epochs-50_batchsize-128_eval-interval-1_use-cuda-_dataset-FashionMNIST_dataroot-.data_plot-lr-_tail-epochs-0
+Finished.
