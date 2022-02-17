@@ -11,7 +11,6 @@ args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-d
 optim_method = ["SGD_Cosine_Start_Linear_Tail_Decay"]
 eta0 = [float(10**i) for i in range(-5,1)]
 eta0 = [0.01,0.1]
-eta0 = [0.01]
 #eta0 = [10**i for i in range(-5,-3)]
 alpha = [None]
 nesterov = [""] #[None] to disable
@@ -25,8 +24,7 @@ use_cuda = [""]
 dataset = ["FashionMNIST"]
 dataroot = ["./data"]
 plot_lr = [""]
-tail_epochs = list(range(0, 32, 2))
-tail_epochs = [12]
+tail_epochs = list(range(32, 52, 2))
 #tail_epochs = list(range(0, 5, 5))
 
 def main():
