@@ -10,3 +10,8 @@ Epoch 7 ---  train: loss - 0.180989,  accuracy - 0.934233;  test: loss - 0.24345
 Epoch 8 ---  train: loss - 0.165102,  accuracy - 0.940333;  test: loss - 0.236808,  accuracy - 0.9158
 Epoch 9 ---  train: loss - 0.152123,  accuracy - 0.945133;  test: loss - 0.231927,  accuracy - 0.9172
 Epoch 10 ---  train: loss - 0.13906,  accuracy - 0.95075;  test: loss - 0.226381,  accuracy - 0.9199
+Epoch 11 ---  train: loss - 0.12751,  accuracy - 0.953933;  test: loss - 0.22671,  accuracy - 0.92
+Epoch 12 ---  train: loss - 0.118817,  accuracy - 0.9569;  test: loss - 0.22715,  accuracy - 0.9201
+Epoch 13 ---  train: loss - 0.117963,  accuracy - 0.957417;  test: loss - 0.231576,  accuracy - 0.9176
+Epoch 14 ---  train: loss - 0.112898,  accuracy - 0.958683;  test: loss - 0.243039,  accuracy - 0.9147
+Epoch 15 ---  train: loss - 0.0872034,  accuracy - 0.970183;  test: loss - 0.227657,  accuracy - 0.9224
