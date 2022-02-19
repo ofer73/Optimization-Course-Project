@@ -75,10 +75,16 @@ class SGDLRDecay(Optimizer):
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max, end_lr=0 : eta0 * ((1 - float(t) / T_max)) \
                 if t > self.warmup_steps else eta0 * (t / self.warmup_steps)
         elif scheme == 'cosine+w':
-            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t*math.pi/T_max)) * eta0 \
+            turn_t = T_max - self.warmup_steps
+            const = (eta0 * (turn_t / self.warmup_steps)) / (
+                    0.5 * (1 + math.cos(turn_t * math.pi / T_max)) * eta0) if self.warmup_steps > 0 else 1
+            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t*math.pi/T_max)) * eta0 * const \
                 if t > self.warmup_steps else eta0 * (t / self.warmup_steps)
         elif scheme == 'linear_start_cosine_tail':
-            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t * math.pi / T_max)) * eta0 \
+            turn_t = T_max - self.tail_steps
+            const = (eta0 * ((1 - float(turn_t) / T_max))) / (
+                        0.5 * (1 + math.cos(turn_t * math.pi / T_max)) * eta0) if self.tail_steps > 0 else 1
+            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t * math.pi / T_max)) * eta0 * const \
                 if t > T_max - self.tail_steps else eta0 * ((1 - float(t) / T_max))
         elif scheme == "cosine+linear_tail":
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: (0.5*(1+math.cos((T_max-self.tail_steps)*math.pi/T_max))*eta0) - ((t-T_max+self.tail_steps)*(0.5*(1+math.cos((T_max-self.tail_steps)*math.pi/T_max))*eta0)/self.tail_steps) \
