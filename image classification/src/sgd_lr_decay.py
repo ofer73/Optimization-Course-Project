@@ -29,7 +29,7 @@ class SGDLRDecay(Optimizer):
         nesterov (bool, optional): enables Nesterov momentum (default: False).
     """
 
-    def __init__(self, params, scheme, eta0, alpha, milestones=[], T_max=0,
+    def __init__(self, params, scheme, eta0, alpha,n_steps_per_epoch, milestones=[], T_max=0,
                  momentum=0, dampening=0, weight_decay=0, nesterov=False, warmup_steps= 0, tail_steps=0 ):
         if eta0 < 0.0:
             raise ValueError("Invalid eta0 value: {}".format(eta0))
@@ -54,6 +54,7 @@ class SGDLRDecay(Optimizer):
         self.T_max = T_max
         self.warmup_steps = warmup_steps
         self.tail_steps = tail_steps
+        self.n_steps_per_epoch = n_steps_per_epoch
 
         # Define the function for computing the current step size for each decay.
         self.get_lr_func = None
@@ -75,11 +76,17 @@ class SGDLRDecay(Optimizer):
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max, end_lr=0 : eta0 * ((1 - float(t) / T_max)) \
                 if t > self.warmup_steps else eta0 * (t / self.warmup_steps)
         elif scheme == 'cosine+w':
+            turn_t = T_max - self.warmup_steps
+            const = (eta0 * (turn_t / self.warmup_steps)) / (
+                        0.5 * (1 + math.cos(turn_t * math.pi / T_max)) * eta0) if self.warmup_steps > 0 else 1
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t*math.pi/T_max)) * eta0 \
                 if t > self.warmup_steps else eta0 * (t / self.warmup_steps)
         elif scheme == 'linear_start_cosine_tail':
-            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t * math.pi / T_max)) * eta0 \
-                if t > T_max - self.tail_steps else eta0 * ((1 - float(t) / T_max))
+            turn_t = T_max - self.tail_steps
+            const = (eta0 * ((1 - float(turn_t) / T_max))) /  (0.5 * (1 + math.cos(turn_t * math.pi / T_max)) * eta0) if self.tail_steps > 0 else 1
+            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: \
+                (0.5 * (1 + math.cos(t * math.pi / T_max)) * eta0 * const) \
+                if t > (T_max - self.tail_steps) else eta0 * ((1 - float(t) / T_max))
 
 
 

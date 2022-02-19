@@ -24,6 +24,8 @@ def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
         nesterov: whether to use nesterov momentum (True) or not (False).
         momentum: momentum factor used in variants of SGD.
         weight_decay: weight decay factor.
+        warmp_steps: number of steps performing warmup learning rate scheduling (if relevant +w scheduler chosen)
+        tail_steps: number of steps performing the tail learning rate scheduling (if relevant +w scheduler chosen)
 
     Outputs:
         an optimizer
@@ -58,7 +60,7 @@ def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
                                alpha=alpha, milestones=milestones, T_max=T_max,
                                momentum=momentum, weight_decay=weight_decay,
                                nesterov=nesterov, warmup_steps=warmp_steps,
-                               tail_steps=tail_steps)
+                               tail_steps=tail_steps, n_steps_per_epoch=n_batches_per_epoch)
     elif optim_method == 'SLS-Armijo0':
         optimizer = Sls(params=params, n_batches_per_epoch=n_batches_per_epoch,
                         init_step_size=eta0, c=c, reset_option=0,

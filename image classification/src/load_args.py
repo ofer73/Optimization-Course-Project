@@ -55,9 +55,11 @@ def load_args():
                         help='Where to store results.')
     parser.add_argument('--plot_lr', type=str, default='false',
                         help='set true to plot learning rates')
-    parser.add_argument('--warmup_steps', type=float, default=0.0,
+    parser.add_argument('--warmup_epochs', type=float, default=0.0,
                         help='number of linear warmup steps for +w lr schedulers (in epochs)')
-    parser.add_argument('--tail_steps', type=float, default=0.0,
+    parser.add_argument('--tail_epochs', type=float, default=0.0,
                         help='number of epochs which use the 2nd "tail" lr scheduler (in epochs)')
+    parser.add_argument('--convergence_rate_threshold', type=float, default=0.97,
+                        help='threshold of where do we consider the optimization process to have converged (e.g. 90%)')
 
     return parser.parse_args()
