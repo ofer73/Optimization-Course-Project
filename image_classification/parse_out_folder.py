@@ -3,6 +3,7 @@ import sys
 from glob import glob
 from matplotlib import pyplot as plt
 import shutil
+from collections import defaultdict
 
 folder_name = sys.argv[1]
 
@@ -14,6 +15,10 @@ exclude = [i for i in exclude if not i.startswith("*.")]
 training_loss_line = "Training running losses:"
 test_acc_line = "Test running accuracies:"
 
+def average_lists(lists):
+    lists = [l for l in lists if l]
+    return [sum(i)/len(i) for i in zip(*lists)]
+
 def str_to_list(s):
     return [elem.strip() for elem in s.strip().strip('][').split(',')]
 
@@ -24,18 +29,28 @@ def main():
     shutil.rmtree(figs_folder, ignore_errors=True)
     os.makedirs(schedulers_dir, exist_ok=True)
     folders = glob(f'{folder_base}/*')
-    
-    test_acc_dic = {}
-    training_loss_dic = {}
-    
+
     with open(f'{folder_base}/args_iterate', 'r') as argsh:
         iterate_over = [i.strip().replace("-","_") for i in argsh.readlines()]
+        
+    if iterate_over[0].startswith("TIMES="):
+        times = iterate_over[0][len("TIMES="):]
+        times = int(times)
+        iterate_over = iterate_over[1:]
+    else:
+        times = 1
+        
+    test_acc_dic = defaultdict(lambda: {'epochs':0, 'test_acc':[False]*times})
+    training_loss_dic = defaultdict(lambda: {'epochs':0, 'training_loss':[False]*times})
+    schedulers_fig = []
     
     print(f'parsing folder {folder_base} for args {iterate_over}')
     c = 0
     crashed = []
+    crashed_keys = []
     for folder in folders:
         folderbase = os.path.basename(folder)
+            
         if folderbase in exclude or True in [folderbase.endswith(i) for i in exclude_ext]:
             continue
             
@@ -62,7 +77,7 @@ def main():
                     test_acc_toggle = True
         
         assert test_acc != None and training_loss != None
-        
+
         args = {}
         with open(f'{folder}/args','r') as logh:
             for l in logh.readlines():
@@ -71,13 +86,33 @@ def main():
                 
         folder_key = tuple([args[key] for key in iterate_over])
         
+        folder_times_id = 0
+        if times > 1:
+            folder_times_id = int(folderbase.split("_")[-1])
+            
+        if training_loss[-1] == "nan" or all(map(lambda x: x=='0.1', test_acc)) or all(map(lambda x: x=='0.1', training_loss)):
+            crashed.append(folder)
+            crashed_keys.append([folder_key,folder_times_id])
+            continue
+            
         test_acc = list(map(float, test_acc))
         training_loss = list(map(float, training_loss))
         epochs = int(args['train_epochs'])
-        test_acc_dic[folder_key] = [range(epochs), test_acc]
-        training_loss_dic[folder_key] = [range(epochs), training_loss]
+        test_acc_dic[folder_key]['test_acc'][folder_times_id] = test_acc
+        if test_acc_dic[folder_key]['epochs'] > 0:
+            assert test_acc_dic[folder_key]['epochs'] == epochs
+        else:
+            test_acc_dic[folder_key]['epochs'] = epochs
+            
+        training_loss_dic[folder_key]['training_loss'][folder_times_id] = training_loss
+        if training_loss_dic[folder_key]['epochs'] > 0:
+            assert training_loss_dic[folder_key]['epochs'] == epochs
+        else:
+            training_loss_dic[folder_key]['epochs'] = epochs
         
-        shutil.copy(f'{folder}/scheduler.jpg', f'{schedulers_dir}/{"_".join([f"{arg_name}_{arg_value}" for arg_value, arg_name in zip(folder_key, iterate_over)])}.jpg')
+        if folder_key not in schedulers_fig:
+            schedulers_fig.append(folder_key)
+            shutil.copy(f'{folder}/scheduler.jpg', f'{schedulers_dir}/{"_".join([f"{arg_name}_{arg_value}" for arg_value, arg_name in zip(folder_key, iterate_over)])}.jpg')
     
     print()
     print("-----------------------------------------------")
@@ -94,12 +129,18 @@ def main():
     if len(crashed) == c:
         return
     
+    for key in test_acc_dic:
+        test_acc_dic[key]['test_acc'] = average_lists(test_acc_dic[key]['test_acc'])
+        
+    for key in training_loss_dic:
+        training_loss_dic[key]['training_loss'] = average_lists(training_loss_dic[key]['training_loss'])
+    
     for argi, arg in enumerate(iterate_over):
         arg_values = list(set([i[argi] for i in test_acc_dic.keys()]))
         for arg_value in arg_values:
             for key in test_acc_dic:
                 if key[argi] == arg_value:
-                    plt.plot(test_acc_dic[key][0], test_acc_dic[key][1], label=key)
+                    plt.plot(range(test_acc_dic[key]['epochs']), test_acc_dic[key]['test_acc'], label=key)
             
             plt.legend(loc='best')
             plt.xlabel('epochs')
@@ -110,7 +151,7 @@ def main():
             
             for key in test_acc_dic:
                 if key[argi] == arg_value:
-                    plt.plot(training_loss_dic[key][0], training_loss_dic[key][1], label=key)
+                    plt.plot(range(training_loss_dic[key]['epochs']), training_loss_dic[key]['training_loss'], label=key)
             
             plt.legend(loc='best')
             plt.xlabel('epochs')
@@ -120,7 +161,7 @@ def main():
             plt.clf()
     
     for key in test_acc_dic:
-        plt.plot(test_acc_dic[key][0], test_acc_dic[key][1], label=key)
+        plt.plot(range(test_acc_dic[key]['epochs']), test_acc_dic[key]['test_acc'], label=key)
     plt.legend(loc='best')
     plt.xlabel('epochs')
     plt.ylabel('test acc')
@@ -129,21 +170,23 @@ def main():
     plt.clf()
     
     for key in training_loss_dic:
-        plt.plot(training_loss_dic[key][0], training_loss_dic[key][1], label=key)
+        plt.plot(range(training_loss_dic[key]['epochs']), training_loss_dic[key]['training_loss'], label=key)
     plt.legend(loc='best')
     plt.xlabel('epochs')
     plt.ylabel('training loss')
     plt.title(f'training loss {iterate_over}')
     plt.savefig(f'{figs_folder}/training_loss.jpg')
     
-    sorted_test_acc_keys = sorted(test_acc_dic.keys(), key=lambda x: test_acc_dic[x][1][-1], reverse=True)
+    sorted_test_acc_keys = sorted(test_acc_dic.keys(), key=lambda x: test_acc_dic[x]['test_acc'][-1], reverse=True)
     print('test acc results')
-    print("\n".join([f'{key}:{test_acc_dic[key][1][-1]}' for key in sorted_test_acc_keys]))
+    print("\n".join([f'{key}:{test_acc_dic[key]["test_acc"][-1]}' for key in sorted_test_acc_keys]))
     print()
-    sorted_training_loss_dic = sorted(training_loss_dic.keys(), key=lambda x: training_loss_dic[x][1][-1])
+    sorted_training_loss_dic = sorted(training_loss_dic.keys(), key=lambda x: training_loss_dic[x]['training_loss'][-1])
     print('training loss results')
-    print("\n".join([f'{key}:{training_loss_dic[key][1][-1]}' for key in sorted_training_loss_dic]))
+    print("\n".join([f'{key}:{training_loss_dic[key]["training_loss"][-1]}' for key in sorted_training_loss_dic]))
     print()
+    
+    print('crashed keys', crashed_keys)
     
 if __name__ == '__main__':
     main()

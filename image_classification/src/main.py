@@ -65,7 +65,7 @@ if __name__ == "__main__":
         criterion = nn.CrossEntropyLoss()
 
         # Train and evaluate the model.
-        print("Training...")
+        print(f"Training for train_loader len {len(train_loader)}")
         running_stats = train(args, train_loader, test_loader, net,
                               criterion, device)
         all_train_losses, all_train_accuracies = running_stats[:2]

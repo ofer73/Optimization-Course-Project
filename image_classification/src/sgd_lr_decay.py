@@ -84,7 +84,7 @@ class SGDLRDecay(Optimizer):
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: (0.5*(1+math.cos((T_max-self.tail_steps)*math.pi/T_max))*eta0) - ((t-T_max+self.tail_steps)*(0.5*(1+math.cos((T_max-self.tail_steps)*math.pi/T_max))*eta0)/self.tail_steps) \
                 if t > T_max - self.tail_steps else 0.5 * (1 + math.cos(t*math.pi/T_max)) * eta0
         elif scheme == "exp+cosine_tail":
-            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos((t-T_max+self.tail_steps)*math.pi/T_max)) * eta0 * (alpha**(T_max - self.tail_steps)) \
+            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: (eta0 * (alpha**t))  /  (1 + math.cos((T_max - self.tail_steps) * math.pi / T_max)) * (1 + math.cos(t * math.pi / T_max)) \
                 if t > T_max - self.tail_steps else cur_lr * alpha
 
     def __setstate__(self, state):
@@ -104,6 +104,7 @@ class SGDLRDecay(Optimizer):
             loss = closure()
 
         self.cur_round += 1
+        
         self.cur_lr = self.get_lr_func(self.cur_lr, self.cur_round, self.eta0,
                                        self.alpha, self.milestones, self.T_max)
 
