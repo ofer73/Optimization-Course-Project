@@ -33,7 +33,8 @@ def train(args, train_loader, test_loader, net, criterion, device):
                            momentum=args.momentum,
                            weight_decay=args.weight_decay,
                            warmup_steps=args.warmup_epochs*len(train_loader),
-                           tail_steps=args.tail_epochs*len(train_loader))
+                           tail_steps=args.tail_epochs*len(train_loader),
+                           restarts_num=args.restarts_num)
 
     if args.optim_method == 'SGD_ReduceLROnPlateau':
         scheduler = ReduceLROnPlateau(optimizer,

@@ -59,5 +59,7 @@ def load_args():
                         help='number of warmup epochs for +w lr schedulers (in epochs)')
     parser.add_argument('--tail-epochs', type=int, default=0,
                         help='number of epochs which use the 2nd "tail" lr scheduler (in epochs)')
+    parser.add_argument('--restarts-num', type=int, default=0,
+                        help='number of restarts used with cosine annealing scheduler scheme')
 
     return parser.parse_args()

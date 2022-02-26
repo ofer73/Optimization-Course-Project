@@ -23,7 +23,9 @@ if __name__ == "__main__":
     def main():
         args = load_args()
         vargs = vars(args)
-        with open(f'{args.log_folder}/args', 'w') as f:
+        if not os.path.exists(args.log_folder):
+              os.makedirs(args.log_folder)
+        with open(f'{args.log_folder}/args', 'w+') as f:
             for arg in vargs:
                 f.write(f"{arg}:{vargs[arg]}\n")
                 
