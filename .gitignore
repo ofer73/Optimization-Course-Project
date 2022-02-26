@@ -1,0 +1,8 @@
+*.exe
+venv/
+env.yml
+*.xml
+*.pyc
+*.gz
+image classification/src/data/FashionMNIST/raw/train-labels-idx1-ubyte
+image classification/src/data/
