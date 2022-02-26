@@ -32,7 +32,7 @@ class SGDLRDecay(Optimizer):
     """
 
     def __init__(self, params, scheme, eta0, alpha, milestones=[], T_max=0,
-                 momentum=0, dampening=0, weight_decay=0, nesterov=False, warmup_steps=0, tail_steps=0, restarts_num=0):
+                 momentum=0, dampening=0, weight_decay=0, nesterov=False, warmup_steps=0, tail_steps=0, restarts_num=1):
         if eta0 < 0.0:
             raise ValueError("Invalid eta0 value: {}".format(eta0))
         if alpha < 0.0:
