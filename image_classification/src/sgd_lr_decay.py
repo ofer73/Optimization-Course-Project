@@ -2,6 +2,8 @@
 Adapted from https://github.com/pytorch/pytorch/blob/master/torch/optim/sgd.py
 """
 import math
+
+import numpy as np
 import torch
 from torch.optim import Optimizer
 
@@ -30,7 +32,7 @@ class SGDLRDecay(Optimizer):
     """
 
     def __init__(self, params, scheme, eta0, alpha, milestones=[], T_max=0,
-                 momentum=0, dampening=0, weight_decay=0, nesterov=False, warmup_steps= 0, tail_steps=0 ):
+                 momentum=0, dampening=0, weight_decay=0, nesterov=False, warmup_steps=0, tail_steps=0, restarts_num=1):
         if eta0 < 0.0:
             raise ValueError("Invalid eta0 value: {}".format(eta0))
         if alpha < 0.0:
@@ -54,6 +56,7 @@ class SGDLRDecay(Optimizer):
         self.T_max = T_max
         self.warmup_steps = warmup_steps
         self.tail_steps = tail_steps
+        self.restarts_num = restarts_num
 
         # Define the function for computing the current step size for each decay.
         self.get_lr_func = None
@@ -67,6 +70,9 @@ class SGDLRDecay(Optimizer):
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: cur_lr * alpha if t in milestones else cur_lr
         elif scheme == 'cosine':
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t*math.pi/T_max)) * eta0
+        elif scheme == 'cosine_annealing':
+            T_0 = self.T_max // self.restarts_num
+            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: self.cosine_annealing(T_0, eta0)
         elif scheme == 'linear':
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max, end_lr=0 : eta0 * ((1 - float(t) / T_max))
         # For the warm-up up scheduelers, eta 0 will be the global maximum of learning rates
@@ -86,6 +92,9 @@ class SGDLRDecay(Optimizer):
                         0.5 * (1 + math.cos(turn_t * math.pi / T_max)) * eta0) if self.tail_steps > 0 else 1
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: 0.5 * (1 + math.cos(t * math.pi / T_max)) * eta0 * const \
                 if t > T_max - self.tail_steps else eta0 * ((1 - float(t) / T_max))
+        elif scheme == 'linear_start_exp_tail':
+            self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: cur_lr * alpha \
+                if t > T_max - self.tail_steps else eta0 * ((1 - float(t) / T_max))
         elif scheme == "cosine+linear_tail":
             self.get_lr_func = lambda cur_lr, t, eta0, alpha, milestones, T_max: (0.5*(1+math.cos((T_max-self.tail_steps)*math.pi/T_max))*eta0) - ((t-T_max+self.tail_steps)*(0.5*(1+math.cos((T_max-self.tail_steps)*math.pi/T_max))*eta0)/self.tail_steps) \
                 if t > T_max - self.tail_steps else 0.5 * (1 + math.cos(t*math.pi/T_max)) * eta0
@@ -97,6 +106,12 @@ class SGDLRDecay(Optimizer):
         super(SGDLRDecay, self).__setstate__(state)
         for group in self.param_groups:
             group.setdefault('nesterov', False)
+
+    def cosine_annealing(self, T_max, eta0):
+        # if we reached the restart milestone, restart curr_round to 0
+        if self.cur_round == T_max + 1:
+            self.cur_round = 0
+        return 0.5 * (1 + math.cos(self.cur_round*math.pi/T_max)) * eta0
 
     def step(self, closure=None):
         """Performs a single optimization step.
@@ -110,7 +125,7 @@ class SGDLRDecay(Optimizer):
             loss = closure()
 
         self.cur_round += 1
-        
+
         self.cur_lr = self.get_lr_func(self.cur_lr, self.cur_round, self.eta0,
                                        self.alpha, self.milestones, self.T_max)
 

@@ -8,7 +8,7 @@ from sls import Sls
 
 
 def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
-               n_batches_per_epoch, nesterov, momentum, weight_decay, warmup_steps, tail_steps):
+               n_batches_per_epoch, nesterov, momentum, weight_decay, warmup_steps, tail_steps, restarts_num):
     """
     Args:
         params: iterable of parameters to optimize or dicts defining
@@ -24,6 +24,10 @@ def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
         nesterov: whether to use nesterov momentum (True) or not (False).
         momentum: momentum factor used in variants of SGD.
         weight_decay: weight decay factor.
+        warmup_steps: number of steps using warm  up scheme
+        tail_steps: number of steps using tail  scheme
+        restarts_num: number of restarts used in cosine annealing scheme
+
 
     Outputs:
         an optimizer
@@ -58,12 +62,16 @@ def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
             scheme = 'cosine+linear_tail'
         elif optim_method == 'SGD_Exp_Start_Cosine_Tail_Decay':
             scheme = 'exp+cosine_tail'
+        elif optim_method == 'SGD_Linear_Start_Exp_Tail_Decay':
+            scheme = 'linear_start_exp_tail'
+        elif optim_method == 'SGD_Cosine_Annealing_Decay':
+            scheme = 'cosine_annealing'
             
         optimizer = SGDLRDecay(params=params, scheme=scheme, eta0=eta0,
                                alpha=alpha, milestones=milestones, T_max=T_max,
                                momentum=momentum, weight_decay=weight_decay,
                                nesterov=nesterov, warmup_steps=warmup_steps,
-                               tail_steps=tail_steps)
+                               tail_steps=tail_steps, restarts_num = restarts_num)
     elif optim_method == 'SLS-Armijo0':
         optimizer = Sls(params=params, n_batches_per_epoch=n_batches_per_epoch,
                         init_step_size=eta0, c=c, reset_option=0,
