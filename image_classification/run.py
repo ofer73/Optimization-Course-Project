@@ -16,8 +16,8 @@ args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-d
 
 optim_method = ["SGD_Cosine_Start_Linear_Tail_Decay"]
 #optim_method = ["SGD_Exp_Start_Cosine_Tail_Decay"]
-eta0 = [float(10**i) for i in range(-5,1)]
-eta0 = [0.01,0.1]
+eta0 = np.arange(0.01,0.05,0.005)
+#eta0 = [0.01,0.1]
 #eta0 = list(np.arange(0.0075,0.012,0.001))
 #eta0 = [float("{:.4f}".format(x)) for x in eta0]
 alpha = [None]#[float(10**i) for i in range(-5,1)] #this represents the ratios not the alpha values!
@@ -25,7 +25,6 @@ nesterov = [""] #[None] to disable
 momentum = [0.9]
 weight_decay = [0.0001]
 train_epochs = [50]
-#train_epochs = [164]
 batchsize = [128]
 eval_interval = [1]
 use_cuda = [""]
@@ -33,7 +32,7 @@ dataset = ["FashionMNIST"]
 dataroot = ["./data"]
 plot_lr = [""]
 validation = [""]
-tail_epochs = list(range(0, 55, 5))
+tail_epochs = [0] #list(range(0, 55, 5))
 TIMES = 10
 
 train_lens = {'FashionMNIST':60000, 'CIFAR10':50000, 'CIFAR100':50000}
