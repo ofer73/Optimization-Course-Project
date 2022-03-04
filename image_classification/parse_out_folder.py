@@ -192,12 +192,17 @@ def main():
     print('crashed keys', crashed_keys)
     
     csvfile = open(f'{figs_folder}/stats.csv', 'w', newline='')
-    fieldnames = ['key','test acc']+[f'conv %{conv}' for conv in convs]+['training loss']
+    fieldnames = iterate_over+['test acc']+[f'conv %{conv}' for conv in convs]+['training loss']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
     
+    info = {}
     for key in sorted_test_acc_keys:
-        info = {'key':str(key),'test acc':test_acc_dic[key]["test_acc"][-1], 'training loss':training_loss_dic[key]['training_loss'][-1]}
+        info['test acc'] = test_acc_dic[key]["test_acc"][-1]
+        info['training loss'] = training_loss_dic[key]['training_loss'][-1]
+        for key_arg, arg in zip(key,iterate_over):
+            info[arg] = key_arg
+        
         for conv in convs:
             info[f'conv %{conv}'] = [i >= info['test acc']*conv/100. for i in test_acc_dic[key]["test_acc"]].index(True)
         writer.writerow(info)
