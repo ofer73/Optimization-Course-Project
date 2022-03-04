@@ -11,7 +11,7 @@ slurm = 'main.slurm'
 cmd = '/home/ycarmon/users/maorkehati/anaconda3/envs/optp/bin/python ./src/main.py'
 sleep_time = 20
 
-args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-decay", "train-epochs", "batchsize", "eval-interval", "use-cuda", "dataset", "dataroot", "plot-lr", "tail-epochs"]
+args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-decay", "train-epochs", "batchsize", "eval-interval", "use-cuda", "dataset", "dataroot", "plot-lr", "tail-epochs","validation"]
 
 optim_method = ["SGD_Cosine_Start_Linear_Tail_Decay"]
 #optim_method = ["SGD_Exp_Start_Cosine_Tail_Decay"]
@@ -32,6 +32,7 @@ dataset = ["FashionMNIST"]
 dataset = ["CIFAR10"]
 dataroot = ["./data"]
 plot_lr = [""]
+validation = [""]
 tail_epochs = list(range(0, 55, 5))
 TIMES = 10
 
