@@ -6,6 +6,7 @@ import sys
 import time
 import random
 import numpy as np
+import math
 
 slurm = 'main.slurm'
 cmd = '/home/ycarmon/users/maorkehati/anaconda3/envs/optp/bin/python ./src/main.py'
@@ -29,14 +30,13 @@ batchsize = [128]
 eval_interval = [1]
 use_cuda = [""]
 dataset = ["FashionMNIST"]
-dataset = ["CIFAR10"]
 dataroot = ["./data"]
 plot_lr = [""]
 validation = [""]
 tail_epochs = list(range(0, 55, 5))
 TIMES = 10
 
-train_lens = {'FashionMNIST':469}
+train_lens = {'FashionMNIST':60000, 'CIFAR10':50000, 'CIFAR100':50000}
 
 run_crashed = []#[[('0.1', '0'), 0], [('0.1', '0'), 4], [('0.1', '10'), 0], [('0.1', '25'), 3], [('0.1', '30'), 3], [('0.1', '35'), 8], [('0.1', '45'), 0], [('0.1', '45'), 1]]
 
@@ -91,12 +91,13 @@ def main():
         dataset_index = args_names.index("dataset")
         alphas_index = args_names.index("alpha")
         epochs_index = args_names.index("train-epochs")
+        bs_index = args_names.index("batchsize")
         for ai, (alist,alist_iter_num) in enumerate(args_list):
             if not alist[alphas_index]:
                 continue
                 
             alist[alphas_index] = float(alist[alphas_index])
-            alist[alphas_index] **= (1/(train_lens[alist[dataset_index]] * float(alist[epochs_index])))
+            alist[alphas_index] **= (1/(math.ceil(train_lens[alist[dataset_index]]/alist[bs_index]) * float(alist[epochs_index])))
             args_list[ai] = (alist, alist_iter_num)
         
     args_list_print = [" ".join([f"{arg_name}:{arg_value}" for arg_name, arg_value in zip(args_names, args) if arg_value != None]) for args in args_list]
