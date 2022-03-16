@@ -14,26 +14,32 @@ sleep_time = 20
 
 args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-decay", "train-epochs", "batchsize", "eval-interval", "use-cuda", "dataset", "dataroot", "plot-lr", "tail-epochs","validation"]
 
-optim_method = ["SGD_Cosine_Start_Linear_Tail_Decay"]
-#optim_method = ["SGD_Exp_Start_Cosine_Tail_Decay"]
-eta0 = np.arange(0.01,0.05,0.005)
-#eta0 = [0.01,0.1]
-#eta0 = list(np.arange(0.0075,0.012,0.001))
-#eta0 = [float("{:.4f}".format(x)) for x in eta0]
-alpha = [None]#[float(10**i) for i in range(-5,1)] #this represents the ratios not the alpha values!
+#optim_method = ["SGD_Cosine_Start_Linear_Tail_Decay"]
+optim_method = ["SGD_Exp_Start_Cosine_Tail_Decay"]
+eta0 = [0.0001,0.001,0.01,0.1]
+alpha = [0.0001, 0.001, 0.01, 0.1] #this represents the ratios not the alpha values!
 nesterov = [""] #[None] to disable
 momentum = [0.9]
 weight_decay = [0.0001]
-train_epochs = [50]
 batchsize = [128]
 eval_interval = [1]
 use_cuda = [""]
-dataset = ["FashionMNIST"]
+dataset = ["FashionMNIST"] #FashionMNIST CIFAR10 CIFAR100
 dataroot = ["./data"]
 plot_lr = [""]
 validation = [""]
-tail_epochs = [0] #list(range(0, 55, 5))
+tail_epochs = [0]#list(range(0, 55, 5))
 TIMES = 10
+
+if len(dataset) == 1:
+    if dataset[0] == "FashionMNIST":
+        train_epochs = [50]
+        
+    elif dataset[0] == "CIFAR10":
+        train_epochs = [164]
+
+    elif dataset[0] == "CIFAR100":
+        train_epochs = [50]
 
 train_lens = {'FashionMNIST':60000, 'CIFAR10':50000, 'CIFAR100':50000}
 
@@ -54,15 +60,17 @@ def main():
             folder_name = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
         out_folder_root = f"outs/{folder_name}"
         if os.path.exists(out_folder_root):
-            if len(sys.argv)>2 and sys.argv[2] == 'overwrite':
+            if len(sys.argv)>2 and sys.argv[2] == 'ow':
                 shutil.rmtree(out_folder_root)
             else:
-                print(f'folder name exists. Run "{sys.argv[0]} <foldername> overwrite" to overwrite')
+                print(f'folder name exists. Run "{sys.argv[0]} <foldername> ow" to overwrite')
                 return
         os.makedirs(out_folder_root)
     
     arg_values = [globals()[args_name.replace("-","_")] for args_name in args_names]
     args_iterate = [arg_name for arg_name,arg_value in zip(args_names, arg_values) if len(arg_value)>1]
+    if 'alpha' in args_iterate:
+        args_iterate[args_iterate.index('alpha')] = 'alpha_name'
 
     if is_run_crashed:
         assert all([len(i[0]) == len(args_iterate) for i in run_crashed])
@@ -74,12 +82,14 @@ def main():
                 run_arg_values[argsh_index] = argsh_value
                 
             args_list.append((run_arg_values,run_crashed_values[1]))
+        args_iterate = [arg_name.replace("-","_") for arg_name in args_iterate]
+        
     else:
         args_list_pre = [list(i) for i in product(*arg_values)]#list(map(list, product(*arg_values)))
         args_list = []
         for args_list_row in args_list_pre:
             for i in range(TIMES):
-                args_list.append((args_list_row, i))
+                args_list.append((args_list_row.copy(), i))
         
         args_iterate = [arg_name.replace("-","_") for arg_name in args_iterate]
         with open(f'{out_folder_root}/args_iterate','w') as argsh:
@@ -91,15 +101,18 @@ def main():
         alphas_index = args_names.index("alpha")
         epochs_index = args_names.index("train-epochs")
         bs_index = args_names.index("batchsize")
-        for ai, (alist,alist_iter_num) in enumerate(args_list):
-            if not alist[alphas_index]:
-                continue
-                
-            alist[alphas_index] = float(alist[alphas_index])
-            alist[alphas_index] **= (1/(math.ceil(train_lens[alist[dataset_index]]/alist[bs_index]) * float(alist[epochs_index])))
-            args_list[ai] = (alist, alist_iter_num)
-        
-    args_list_print = [" ".join([f"{arg_name}:{arg_value}" for arg_name, arg_value in zip(args_names, args) if arg_value != None]) for args in args_list]
+        if len(alpha)>0 and alpha[0]:
+            args_names.append('alpha-name')
+            for ai, (alist,alist_iter_num) in enumerate(args_list):
+                if not alist[alphas_index]:
+                    continue
+                    
+                alist[alphas_index] = float(alist[alphas_index])
+                alist.append(alist[alphas_index])
+                alist[alphas_index] **= (1/(math.ceil(train_lens[alist[dataset_index]]/alist[bs_index]) * float(alist[epochs_index])))
+                args_list[ai] = (alist, alist_iter_num)
+    
+    args_list_print = [" ".join([f"{arg_name}:{arg_value}" for arg_name, arg_value in zip(args_names, args[0]) if arg_value != None]) + f"\t#{args[1]}" for args in args_list]
     args_list_print = "\n".join(args_list_print)
     print("using args list:\n"+args_list_print)
     
@@ -107,7 +120,7 @@ def main():
     jobs_count = 0
     for args_values, iter_num in args_list:
         print("args_values", args_values)
-        folder_name_base = "_".join([f"{arg_name}-{arg_value if type(arg_value) != str else arg_value.replace('/','')}" for arg_name, arg_value in zip(args_names, args_values) if arg_value != None])
+        folder_name_base = "_".join([f"{arg_name.replace('-','_')}-{arg_value if type(arg_value) != str else arg_value.replace('/','')}" for arg_name, arg_value in zip(args_names, args_values) if arg_value != None and arg_name.replace('-','_') in args_iterate])
         ext = ''
         if TIMES > 1:
             ext = f'_{iter_num}'               
@@ -129,7 +142,7 @@ def main():
         c = c[:cind]+ f'--error={out_folder}/err.err' + c[c.find("\n",cind):]
         
         cind = c.find('--job-name=')
-        c = c[:cind]+ f'--job-name={folder_name}' + c[c.find("\n",cind):]
+        c = c[:cind]+ f'--job-name=optim-{folder_name}' + c[c.find("\n",cind):]
         
         rand_slurm_name = f'{time.time()}_{random.random()}'
         with open(f'{rand_slurm_name}.slurm','w') as mainf:

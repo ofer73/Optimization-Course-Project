@@ -13,6 +13,8 @@ def load_args():
                         help='Initial learning rate (default: 0.1).')
     parser.add_argument('--alpha', type=float, default=0.1,
                         help='Decay factor (default: 0.1).')
+    parser.add_argument('--alpha-name', type=float, default=0.1,
+                        help='ratio name for alpha')
     parser.add_argument('--c', type=float, default=0.1,
                         help='Line search parameter (default: 0.1).')
     parser.add_argument('--nesterov', action='store_true',

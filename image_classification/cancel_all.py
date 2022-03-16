@@ -1,7 +1,7 @@
 import os
 
 bashcmd = os.popen('bash s.sh').readlines()
-for l in bashcmd[1:]:
+for l in bashcmd:
 	jid = [i for i in l.split(" ") if i]
 	try:
 		name, jid = jid[0], int(jid[1])

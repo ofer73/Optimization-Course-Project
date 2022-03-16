@@ -35,6 +35,9 @@ def main():
 
     with open(f'{folder_base}/args_iterate', 'r') as argsh:
         iterate_over = [i.strip().replace("-","_") for i in argsh.readlines()]
+        for i, io in enumerate(iterate_over):
+            if io == 'alpha':
+                iterate_over[i] == 'alpha_name'
         
     if iterate_over[0].startswith("TIMES="):
         times = iterate_over[0][len("TIMES="):]
