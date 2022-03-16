@@ -194,7 +194,7 @@ def main():
     
     print('crashed keys', crashed_keys)
     
-    csvfile = open(f'{figs_folder}/stats.csv', 'w', newline='')
+    csvfile = open(f'{figs_folder}/{folder_name}.csv', 'w', newline='')
     fieldnames = iterate_over+['test acc']+[f'conv %{conv}' for conv in convs]+['training loss']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()

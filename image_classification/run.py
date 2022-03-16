@@ -16,8 +16,8 @@ args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-d
 
 #optim_method = ["SGD_Cosine_Start_Linear_Tail_Decay"]
 optim_method = ["SGD_Exp_Start_Cosine_Tail_Decay"]
-eta0 = [0.0001,0.001,0.01,0.1]
-alpha = [0.0001, 0.001, 0.01, 0.1] #this represents the ratios not the alpha values!
+eta0 = [0.01]
+alpha = [0.005,0.01,0.025,0.05,0.075,0.1] #this represents the ratios not the alpha values!
 nesterov = [""] #[None] to disable
 momentum = [0.9]
 weight_decay = [0.0001]
@@ -29,7 +29,7 @@ dataroot = ["./data"]
 plot_lr = [""]
 validation = [""]
 tail_epochs = [0]#list(range(0, 55, 5))
-TIMES = 10
+TIMES = 30
 
 if len(dataset) == 1:
     if dataset[0] == "FashionMNIST":
