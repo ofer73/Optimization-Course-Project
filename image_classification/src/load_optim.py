@@ -68,6 +68,8 @@ def load_optim(params, optim_method, eta0, alpha, c, milestones, T_max,
             scheme = 'cosine_annealing'
         elif optim_method == 'SGD_Cosine_Eps_Stop_Decay':
             scheme = 'cosine_eps_stop'
+        elif optim_method == 'SGD_Cosine_Tail_Curved_Decay':
+            scheme = 'cosine_tail_curved'
             
         optimizer = SGDLRDecay(params=params, scheme=scheme, eta0=eta0,
                                alpha=alpha, milestones=milestones, T_max=T_max,
