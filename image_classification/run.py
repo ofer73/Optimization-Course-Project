@@ -10,26 +10,28 @@ import math
 
 slurm = 'main.slurm'
 cmd = '/home/ycarmon/users/maorkehati/anaconda3/envs/optp/bin/python ./src/main.py'
-sleep_time = 20
+sleep_time = 5
 
 args_names = ["optim-method", "eta0", "alpha", "nesterov", "momentum", "weight-decay", "train-epochs", "batchsize", "eval-interval", "use-cuda", "dataset", "dataroot", "plot-lr", "tail-epochs","validation"]
 
 #optim_method = ["SGD_Cosine_Start_Linear_Tail_Decay"]
-optim_method = ["SGD_Exp_Start_Cosine_Tail_Decay"]
-eta0 = [0.01]
-alpha = [0.005,0.01,0.025,0.05,0.075,0.1] #this represents the ratios not the alpha values!
+#optim_method = ["SGD_Exp_Start_Cosine_Tail_Decay"]
+optim_method = ["SGD_Cosine_Eps_Stop_Decay"]
+eta0 = [0.15] 
+alpha = [0,0.01,0.05,0.1,0.15,0.2,0.5] #this might represent the ratios not the alpha values! Depends on following bool
+alpha_ratio = False #alphas represent ratios and not real values
 nesterov = [""] #[None] to disable
 momentum = [0.9]
 weight_decay = [0.0001]
 batchsize = [128]
 eval_interval = [1]
 use_cuda = [""]
-dataset = ["FashionMNIST"] #FashionMNIST CIFAR10 CIFAR100
+dataset = ["CIFAR100"] #FashionMNIST CIFAR10 CIFAR100
 dataroot = ["./data"]
 plot_lr = [""]
 validation = [""]
 tail_epochs = [0]#list(range(0, 55, 5))
-TIMES = 30
+TIMES = 20
 
 if len(dataset) == 1:
     if dataset[0] == "FashionMNIST":
@@ -69,7 +71,7 @@ def main():
     
     arg_values = [globals()[args_name.replace("-","_")] for args_name in args_names]
     args_iterate = [arg_name for arg_name,arg_value in zip(args_names, arg_values) if len(arg_value)>1]
-    if 'alpha' in args_iterate:
+    if 'alpha' in args_iterate and alpha_ratio:
         args_iterate[args_iterate.index('alpha')] = 'alpha_name'
 
     if is_run_crashed:
@@ -101,7 +103,7 @@ def main():
         alphas_index = args_names.index("alpha")
         epochs_index = args_names.index("train-epochs")
         bs_index = args_names.index("batchsize")
-        if len(alpha)>0 and alpha[0]:
+        if len(alpha)>0 and alpha[0] and alpha_ratio:
             args_names.append('alpha-name')
             for ai, (alist,alist_iter_num) in enumerate(args_list):
                 if not alist[alphas_index]:

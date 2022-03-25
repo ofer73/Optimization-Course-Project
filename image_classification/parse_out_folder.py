@@ -17,6 +17,7 @@ exclude = [i for i in exclude if not i.startswith("*.")]
 
 training_loss_line = "Training running losses:"
 test_acc_line = "Test running accuracies:"
+style = '--' #dashed
 
 def average_lists(lists):
     lists = [l for l in lists if l]
@@ -37,7 +38,8 @@ def main():
         iterate_over = [i.strip().replace("-","_") for i in argsh.readlines()]
         for i, io in enumerate(iterate_over):
             if io == 'alpha':
-                iterate_over[i] == 'alpha_name'
+                pass
+                #iterate_over[i] == 'alpha_name'
         
     if iterate_over[0].startswith("TIMES="):
         times = iterate_over[0][len("TIMES="):]
@@ -146,7 +148,7 @@ def main():
         for arg_value in arg_values:
             for key in test_acc_dic:
                 if key[argi] == arg_value:
-                    plt.plot(range(test_acc_dic[key]['epochs']), test_acc_dic[key]['test_acc'], label=key)
+                    plt.plot(range(test_acc_dic[key]['epochs']), test_acc_dic[key]['test_acc'], style, label=key)
             
             plt.legend(loc='best')
             plt.xlabel('epochs')
@@ -157,7 +159,7 @@ def main():
             
             for key in test_acc_dic:
                 if key[argi] == arg_value:
-                    plt.plot(range(training_loss_dic[key]['epochs']), training_loss_dic[key]['training_loss'], label=key)
+                    plt.plot(range(training_loss_dic[key]['epochs']), training_loss_dic[key]['training_loss'], style, label=key)
             
             plt.legend(loc='best')
             plt.xlabel('epochs')
@@ -167,7 +169,7 @@ def main():
             plt.clf()
     
     for key in test_acc_dic:
-        plt.plot(range(test_acc_dic[key]['epochs']), test_acc_dic[key]['test_acc'], label=key)
+        plt.plot(range(test_acc_dic[key]['epochs']), test_acc_dic[key]['test_acc'], style, label=key)
     plt.legend(loc='best')
     plt.xlabel('epochs')
     plt.ylabel('test acc')
@@ -176,7 +178,7 @@ def main():
     plt.clf()
     
     for key in training_loss_dic:
-        plt.plot(range(training_loss_dic[key]['epochs']), training_loss_dic[key]['training_loss'], label=key)
+        plt.plot(range(training_loss_dic[key]['epochs']), training_loss_dic[key]['training_loss'], style, label=key)
     plt.legend(loc='best')
     plt.xlabel('epochs')
     plt.ylabel('training loss')
