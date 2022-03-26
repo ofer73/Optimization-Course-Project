@@ -35,7 +35,7 @@ class SGDLRDecay(Optimizer):
                  momentum=0, dampening=0, weight_decay=0, nesterov=False, warmup_steps=0, tail_steps=0, restarts_num=1):
         if eta0 < 0.0:
             raise ValueError("Invalid eta0 value: {}".format(eta0))
-        if alpha < 0.0:
+        if alpha < 0.0 and scheme != 'cosine_tail_curved':
             raise ValueError("Invalid alpha value: {}".format(alpha))
         if momentum < 0.0:
             raise ValueError("Invalid momentum value: {}".format(momentum))
